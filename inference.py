@@ -23,57 +23,72 @@ class DataSet:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_path', type=str, default="example_data\\tweet_emotions.xlsx", help='place where the dataset is in.')
+parser.add_argument('--data_path', type=str, default="example_data\\tweet_emotions.xlsx",
+                    help='place where the dataset is in.')
 parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
+parser.add_argument('--input', type=str, default="", help='input any text')
 cmd_args = parser.parse_args()
 
 data_set = DataSet(cmd_args=cmd_args)
 
-args = ClassificationDeployArguments(
-    pretrained_model_name="beomi/kcbert-base",
-    downstream_model_dir=cmd_args.model_path,
-    max_seq_length=128,
-)
-tokenizer = BertTokenizer.from_pretrained(
-    args.pretrained_model_name,
-    do_lower_case=False,
-)
-fine_tuned_model_ckpt = torch.load(
-    args.downstream_model_checkpoint_fpath,
-    map_location=torch.device("cpu")
-)
 
-pretrained_model_config = BertConfig.from_pretrained(
-    args.pretrained_model_name,
-    num_labels=fine_tuned_model_ckpt['state_dict']['model.classifier.bias'].shape.numel(),
-)
-model = BertForSequenceClassification(pretrained_model_config)
-model.load_state_dict({k.replace("model.", ""): v for k, v in fine_tuned_model_ckpt['state_dict'].items()})
-model.eval()
+class MyModel:
+    def __init__(self):
+        self.args = ClassificationDeployArguments(
+            pretrained_model_name="beomi/kcbert-base",
+            downstream_model_dir=cmd_args.model_path,
+            max_seq_length=128,
+        )
+        self.tokenizer = BertTokenizer.from_pretrained(
+            self.args.pretrained_model_name,
+            do_lower_case=False,
+        )
+        self.fine_tuned_model_ckpt = torch.load(
+            self.args.downstream_model_checkpoint_fpath,
+            map_location=torch.device("cpu")
+        )
+        self.pretrained_model_config = BertConfig.from_pretrained(
+            self.args.pretrained_model_name,
+            num_labels=self.fine_tuned_model_ckpt['state_dict']['model.classifier.bias'].shape.numel(),
+        )
+        self.model = BertForSequenceClassification(self.pretrained_model_config)
+        self.activate = False
+
+    def activate_model(self):
+        if not self.activate:
+            self.activate = True
+            self.model.load_state_dict(
+                {k.replace("model.", ""): v for k, v in self.fine_tuned_model_ckpt['state_dict'].items()})
+            self.model.eval()
+
+    def inference(self, sentence):
+        self.activate_model()
+        label_names = data_set.get_labels()
+        # Preprocess the input
+        inputs = self.tokenizer(
+            [sentence],
+            max_length=self.args.max_seq_length,
+            padding="max_length",
+            truncation=True,
+        )
+
+        # Inference
+        with torch.no_grad():
+            outputs = self.model(**{k: torch.tensor(v) for k, v in inputs.items()})
+
+        probabilities = softmax(outputs.logits, dim=1)
+        probabilities = probabilities.squeeze().tolist()  # If there's only one input sentence
+
+        # Pair each label with its corresponding probability
+        label_probabilities = zip(label_names, probabilities)
+
+        # Print the probabilities per label
+        for label, prob in label_probabilities:
+            print(f"{label}: {prob:.4f}")
+
+        return probabilities
 
 
-def inference_fn(sentence):
-    label_names = data_set.get_labels()
-    # Preprocess the input
-    inputs = tokenizer(
-        [sentence],
-        max_length=args.max_seq_length,
-        padding="max_length",
-        truncation=True,
-    )
-
-    # Inference
-    with torch.no_grad():
-        outputs = model(**{k: torch.tensor(v) for k, v in inputs.items()})
-
-    probabilities = softmax(outputs.logits, dim=1)
-    probabilities = probabilities.squeeze().tolist()  # If there's only one input sentence
-
-    # Pair each label with its corresponding probability
-    label_probabilities = zip(label_names, probabilities)
-
-    # Print the probabilities per label
-    for label, prob in label_probabilities:
-        print(f"{label}: {prob:.4f}")
-
-    return probabilities
+if __name__ == '__main__':
+    my_model = MyModel()
+    my_model.inference(cmd_args.input)
