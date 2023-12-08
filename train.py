@@ -13,8 +13,8 @@ import argparse
 
 
 class DataSet:
-    def __init__(self, parser):
-        self.data_path = parser.data_path
+    def __init__(self, cmd_args):
+        self.data_path = cmd_args.data_path
         self.df = pd.read_excel(self.data_path)
         pass
 
@@ -39,12 +39,13 @@ class DataSet:
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_path', type=str, default="example_data\\tweet_emotions.xlsx", help='place where the dataset is in.')
 parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
+cmd_args = parser.parse_args()
 
 args = ClassificationTrainArguments(
     pretrained_model_name="beomi/kcbert-base",
     downstream_corpus_name="emote",
     downstream_corpus_root_dir="example_data",
-    downstream_model_dir=parser.model_path,
+    downstream_model_dir=cmd_args.model_path,
     batch_size=32 if torch.cuda.is_available() else 4,
     learning_rate=5e-5,
     max_seq_length=128,
@@ -55,7 +56,7 @@ args = ClassificationTrainArguments(
 nlpbook.set_seed(args)
 nlpbook.set_logger(args)
 
-corpus = DataSet(parser=parser)
+corpus = DataSet(cmd_args=cmd_args)
 tokenizer = BertTokenizer.from_pretrained(
     args.pretrained_model_name,
     do_lower_case=False,
