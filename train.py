@@ -37,7 +37,7 @@ class DataSet:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_path', type=str, default="example_data\\tweet_emotions.xlsx", help='place where the dataset is in.')
+parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='place where the dataset is in.')
 parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
 cmd_args = parser.parse_args()
 
