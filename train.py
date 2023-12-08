@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 import torch
 from torch.utils.data import DataLoader, RandomSampler
 from torch.utils.data import SequentialSampler
@@ -10,12 +9,12 @@ from ratsnlp.nlpbook.classification import ClassificationTrainArguments
 from ratsnlp.nlpbook.classification import ClassificationDataset
 from ratsnlp.nlpbook.classification import ClassificationTask
 from transformers import BertTokenizer
+import argparse
 
-# read data
 
 class DataSet:
-    def __init__(self):
-        self.data_path = "example_data\\tweet_emotions.xlsx"
+    def __init__(self, parser):
+        self.data_path = parser.data_path
         self.df = pd.read_excel(self.data_path)
         pass
 
@@ -37,11 +36,15 @@ class DataSet:
         return len(self.get_labels())
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--data_path', type=str, default="example_data\\tweet_emotions.xlsx", help='place where the dataset is in.')
+parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
+
 args = ClassificationTrainArguments(
     pretrained_model_name="beomi/kcbert-base",
     downstream_corpus_name="emote",
     downstream_corpus_root_dir="example_data",
-    downstream_model_dir="models",
+    downstream_model_dir=parser.model_path,
     batch_size=32 if torch.cuda.is_available() else 4,
     learning_rate=5e-5,
     max_seq_length=128,
@@ -52,14 +55,11 @@ args = ClassificationTrainArguments(
 nlpbook.set_seed(args)
 nlpbook.set_logger(args)
 
-# Download data
-# Set dataset
-corpus = DataSet()
+corpus = DataSet(parser=parser)
 tokenizer = BertTokenizer.from_pretrained(
     args.pretrained_model_name,
     do_lower_case=False,
 )
-
 pretrained_model_config = BertConfig.from_pretrained(
     args.pretrained_model_name,
     num_labels=corpus.num_labels,
@@ -68,7 +68,6 @@ model = BertForSequenceClassification.from_pretrained(
         args.pretrained_model_name,
         config=pretrained_model_config,
 )
-
 
 train_dataset = ClassificationDataset(
 	args=args,
@@ -102,7 +101,6 @@ val_dataloader = DataLoader(
 )
 
 task = ClassificationTask(model, args)
-
 if __name__ == '__main__':
     trainer = nlpbook.get_trainer(args)
     trainer.fit(
