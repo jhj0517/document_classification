@@ -15,7 +15,7 @@ from transformers import BertTokenizer
 
 class DataSet:
     def __init__(self):
-        self.data_path = "example_data\\tweet_emotions_200.xlsx"
+        self.data_path = "example_data\\tweet_emotions.xlsx"
         self.df = pd.read_excel(self.data_path)
         pass
 
@@ -35,6 +35,7 @@ class DataSet:
     @property
     def num_labels(self):
         return len(self.get_labels())
+
 
 args = ClassificationTrainArguments(
     pretrained_model_name="beomi/kcbert-base",
@@ -102,9 +103,10 @@ val_dataloader = DataLoader(
 
 task = ClassificationTask(model, args)
 
-trainer = nlpbook.get_trainer(args)
-trainer.fit(
-    task,
-    train_dataloaders=train_dataloader,
-    val_dataloaders=val_dataloader,
-)
+if __name__ == '__main__':
+    trainer = nlpbook.get_trainer(args)
+    trainer.fit(
+        task,
+        train_dataloaders=train_dataloader,
+        val_dataloaders=val_dataloader,
+    )
