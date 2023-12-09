@@ -4,10 +4,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from torch.utils.data import SequentialSampler
 from transformers import BertConfig, BertForSequenceClassification
 from ratsnlp import nlpbook
-from ratsnlp.nlpbook.classification import ClassificationExample
-from ratsnlp.nlpbook.classification import ClassificationTrainArguments
-from ratsnlp.nlpbook.classification import ClassificationDataset
-from ratsnlp.nlpbook.classification import ClassificationTask
+from ratsnlp.nlpbook.classification import ClassificationExample, ClassificationTrainArguments, ClassificationDataset, ClassificationTask, NsmcCorpus
 from transformers import BertTokenizer
 import argparse
 
@@ -18,10 +15,10 @@ class DataSet:
         self.df = pd.read_excel(self.data_path)
         pass
 
-    def get_examples(self, data_root_path, mode):
+    def get_examples(self):
         excel_data_df = self.df
         examples = []
-        for i in range(len(excel_data_df.count())):  # 70587
+        for i in range(len(excel_data_df)):
             text_a, label = excel_data_df.loc[i]['content'], excel_data_df.loc[i]['label']
             examples.append(ClassificationExample(text_a=text_a, text_b=None, label=label))
         return examples
