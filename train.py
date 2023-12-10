@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from torch.utils.data import SequentialSampler
 from transformers import BertConfig, BertForSequenceClassification
 from ratsnlp import nlpbook
-from ratsnlp.nlpbook.classification import ClassificationExample, ClassificationTrainArguments, ClassificationDataset, ClassificationTask, NsmcCorpus
+from ratsnlp.nlpbook.classification import ClassificationExample, ClassificationTrainArguments, ClassificationDataset, ClassificationTask
 from transformers import BertTokenizer
 import argparse
 
