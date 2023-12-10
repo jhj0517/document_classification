@@ -30,9 +30,9 @@ class DataSet:
         return len(self.get_labels())
 
 
-class ClassificationModel(DataSet):
-    def __init__(self, cmd_args):
-        super().__init__(cmd_args)
+class ClassificationModel:
+    def __init__(self, cmd_args, data_set):
+        self.data_set = data_set
         self.args = ClassificationDeployArguments(
             pretrained_model_name="beomi/kcbert-base",
             downstream_model_dir=cmd_args.model_path,
@@ -62,7 +62,7 @@ class ClassificationModel(DataSet):
 
     def inference(self, sentence):
         self.activate_model()
-        label_names = data_set.get_labels()
+        label_names = self.data_set.get_labels()
         # Preprocess the input
         inputs = self.tokenizer(
             [sentence],
@@ -96,5 +96,5 @@ if __name__ == '__main__':
     cmd_args = parser.parse_args()
 
     data_set = DataSet(cmd_args=cmd_args)
-    my_model = ClassificationModel(data_set)
+    my_model = ClassificationModel(cmd_args=cmd_args, data_set=data_set)
     my_model.inference(cmd_args.input)
