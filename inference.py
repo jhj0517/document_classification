@@ -90,7 +90,7 @@ class ClassificationModel:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='Location where the dataset is located.')
+    parser.add_argument('--data_path', type=str, default="example_data/example_dataset.xlsx", help='Location where the dataset is located.')
     parser.add_argument('--model_path', type=str, default="models", help='Location where the output model is located.')
     parser.add_argument('--input', type=str, default="", help='any input text')
     cmd_args = parser.parse_args()

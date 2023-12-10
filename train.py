@@ -35,7 +35,7 @@ class DataSet:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='Location where the dataset is located.')
+    parser.add_argument('--data_path', type=str, default="example_data/example_dataset.xlsx", help='Location where the dataset is located.')
     parser.add_argument('--model_path', type=str, default="models", help='Location where the output model is located.')
     parser.add_argument('--batch_size', type=int, default=32, help='training config, batch size')
     parser.add_argument('--learning_rate', type=float, default=5e-5, help='training config, learning rate')
