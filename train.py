@@ -37,6 +37,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, default="example_data/example_dataset.xlsx", help='Location where the dataset is located.')
     parser.add_argument('--model_path', type=str, default="models", help='Location where the output model is located.')
+    parser.add_argument('--pretrained_model_name', type=str, default="beomi/kcbert-base", help='training config, batch size')
     parser.add_argument('--batch_size', type=int, default=32, help='training config, batch size')
     parser.add_argument('--learning_rate', type=float, default=5e-5, help='training config, learning rate')
     parser.add_argument('--max_seq_length', type=int, default=128, help='training config, max_seq_length')
@@ -45,7 +46,7 @@ if __name__ == '__main__':
     cmd_args = parser.parse_args()
     # set args for training
     args = ClassificationTrainArguments(
-        pretrained_model_name="beomi/kcbert-base",
+        pretrained_model_name=cmd_args.pretrained_model_name,
         downstream_corpus_name="emote",
         downstream_corpus_root_dir="example_data",
         downstream_model_dir=cmd_args.model_path,
