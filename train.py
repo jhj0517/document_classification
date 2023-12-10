@@ -34,7 +34,6 @@ class DataSet:
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='Location where the dataset is located.')
     parser.add_argument('--model_path', type=str, default="models", help='Location where the output model is located.')
@@ -44,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=6, help='training config, epochs')
     parser.add_argument('--seed', type=int, default=7, help='training config, seed')
     cmd_args = parser.parse_args()
-
+    # set args for training
     args = ClassificationTrainArguments(
         pretrained_model_name="beomi/kcbert-base",
         downstream_corpus_name="emote",
@@ -57,13 +56,13 @@ if __name__ == '__main__':
         tpu_cores=0 if torch.cuda.is_available() else 8,
         seed=cmd_args.seed,
     )
+    # dataset preparation
     nlpbook.set_seed(args)
     nlpbook.set_logger(args)
     tokenizer = BertTokenizer.from_pretrained(
         args.pretrained_model_name,
         do_lower_case=False,
     )
-
     corpus = DataSet(cmd_args=cmd_args)
     train_dataset = ClassificationDataset(
         args=args,
@@ -79,7 +78,6 @@ if __name__ == '__main__':
         drop_last=False,
         num_workers=args.cpu_workers,
     )
-
     # set dataset for validation
     val_dataset = ClassificationDataset(
         args=args,
@@ -95,6 +93,7 @@ if __name__ == '__main__':
         drop_last=False,
         num_workers=args.cpu_workers,
     )
+    # load pretrained model
     pretrained_model_config = BertConfig.from_pretrained(
         args.pretrained_model_name,
         num_labels=corpus.num_labels,
@@ -103,6 +102,7 @@ if __name__ == '__main__':
             args.pretrained_model_name,
             config=pretrained_model_config,
     )
+    # training
     task = ClassificationTask(model, args)
     trainer = nlpbook.get_trainer(args)
     trainer.fit(

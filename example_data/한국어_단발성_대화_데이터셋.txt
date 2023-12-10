@@ -1,3 +1,0 @@
-본 데이터는 AI 허브 에서 학습 목적으로 사용된 데이터 입니다
-https://aihub.or.kr/aihubdata/data/dwld.do?currMenu=&topMenu=&dataSetSn=270&beforeSn=274&inqrySeCode=&intrstDataAt=N&reloadYn=N&useAt=
-

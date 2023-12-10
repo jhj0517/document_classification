@@ -1,0 +1,5 @@
+This example dataset is a very small sample from Kaggle.
+The original dataset should have much more data.
+
+The example dataset here is a small sample from Kaggle:
+https://www.kaggle.com/datasets/pashupatigupta/emotion-detection-from-text
