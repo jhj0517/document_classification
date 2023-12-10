@@ -1,4 +1,4 @@
-from ratsnlp.nlpbook.classification import ClassificationDeployArguments
+from ratsnlp.nlpbook.classification import ClassificationDeployArguments, ClassificationExample
 from transformers import BertTokenizer, BertConfig, BertForSequenceClassification
 import torch
 from torch.nn.functional import softmax
@@ -12,6 +12,14 @@ class DataSet:
         self.df = pd.read_excel(self.data_path)
         pass
 
+    def get_examples(self):
+        excel_data_df = self.df
+        examples = []
+        for i in range(len(excel_data_df)):  # 70587
+            text_a, label = excel_data_df.loc[i]['content'], excel_data_df.loc[i]['label']
+            examples.append(ClassificationExample(text_a=text_a, text_b=None, label=label))
+        return examples
+
     def get_labels(self):
         excel_data_df = self.df
         intents = excel_data_df['label']
@@ -22,18 +30,9 @@ class DataSet:
         return len(self.get_labels())
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx",
-                    help='place where the dataset is in.')
-parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
-parser.add_argument('--input', type=str, default="", help='input any text')
-cmd_args = parser.parse_args()
-
-data_set = DataSet(cmd_args=cmd_args)
-
-
-class MyModel:
-    def __init__(self):
+class ClassificationModel(DataSet):
+    def __init__(self, cmd_args):
+        super().__init__(cmd_args)
         self.args = ClassificationDeployArguments(
             pretrained_model_name="beomi/kcbert-base",
             downstream_model_dir=cmd_args.model_path,
@@ -89,6 +88,15 @@ class MyModel:
         return probabilities
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx",
+                    help='place where the dataset is in.')
+parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
+parser.add_argument('--input', type=str, default="", help='input any text')
+cmd_args = parser.parse_args()
+
+data_set = DataSet(cmd_args=cmd_args)
+my_model = ClassificationModel(data_set)
+
 if __name__ == '__main__':
-    my_model = MyModel()
     my_model.inference(cmd_args.input)

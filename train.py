@@ -15,7 +15,7 @@ class DataSet:
         self.df = pd.read_excel(self.data_path)
         pass
 
-    def get_examples(self):
+    def get_examples(self, data_root_path, mode):
         excel_data_df = self.df
         examples = []
         for i in range(len(excel_data_df)):
