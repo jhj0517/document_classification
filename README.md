@@ -3,7 +3,7 @@ This repository is dedicated to fine-tune the text classification models.
 It primarily focuses on fine-tuning the pre-trained BERT model, utilizing the [ratsnlp](https://github.com/ratsgo/ratsnlp) package.
 
 # Notebook
-If you want to try it in the colab, please refer to [notebook](https://colab.research.google.com/github/jhj0517/document_classification/blob/master/notebook/document_classification.ipynb?authuser=2#scrollTo=8WU3ufLF6kpw) here.
+If you want to try it in the colab, please refer to [notebook](https://colab.research.google.com/github/jhj0517/document_classification/blob/master/notebook/document_classification.ipynb) here.
 
 # Dataset
 You will need to prepare a dataset comprising two columns: one for the `document` and the other for `label`. An example of the dataset format is as follows:
