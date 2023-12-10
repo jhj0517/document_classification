@@ -36,8 +36,13 @@ class DataSet:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='place where the dataset is in.')
-    parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
+    parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='Location where the dataset is located.')
+    parser.add_argument('--model_path', type=str, default="models", help='Location where the output model is located.')
+    parser.add_argument('--batch_size', type=int, default=32, help='training config, batch size')
+    parser.add_argument('--learning_rate', type=float, default=5e-5, help='training config, learning rate')
+    parser.add_argument('--max_seq_length', type=int, default=128, help='training config, max_seq_length')
+    parser.add_argument('--epochs', type=int, default=6, help='training config, epochs')
+    parser.add_argument('--seed', type=int, default=7, help='training config, seed')
     cmd_args = parser.parse_args()
 
     args = ClassificationTrainArguments(
@@ -45,12 +50,12 @@ if __name__ == '__main__':
         downstream_corpus_name="emote",
         downstream_corpus_root_dir="example_data",
         downstream_model_dir=cmd_args.model_path,
-        batch_size=32 if torch.cuda.is_available() else 4,
-        learning_rate=5e-5,
-        max_seq_length=128,
-        epochs=6,
+        batch_size=cmd_args.batch_size if torch.cuda.is_available() else 4,
+        learning_rate=cmd_args.learning_rate,
+        max_seq_length=cmd_args.max_seq_length,
+        epochs=cmd_args.epochs,
         tpu_cores=0 if torch.cuda.is_available() else 8,
-        seed=7,
+        seed=cmd_args.seed,
     )
     nlpbook.set_seed(args)
     nlpbook.set_logger(args)

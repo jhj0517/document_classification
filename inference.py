@@ -87,16 +87,13 @@ class ClassificationModel(DataSet):
 
         return probabilities
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx",
-                    help='place where the dataset is in.')
-parser.add_argument('--model_path', type=str, default="models", help='place where the trained model is saved')
-parser.add_argument('--input', type=str, default="", help='input any text')
-cmd_args = parser.parse_args()
-
-data_set = DataSet(cmd_args=cmd_args)
-my_model = ClassificationModel(data_set)
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_path', type=str, default="example_data/한국어_단발성_대화_데이터셋.xlsx", help='Location where the dataset is located.')
+    parser.add_argument('--model_path', type=str, default="models", help='Location where the output model is located.')
+    parser.add_argument('--input', type=str, default="", help='any input text')
+    cmd_args = parser.parse_args()
+
+    data_set = DataSet(cmd_args=cmd_args)
+    my_model = ClassificationModel(data_set)
     my_model.inference(cmd_args.input)
