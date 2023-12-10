@@ -15,8 +15,8 @@ class DataSet:
     def get_examples(self):
         excel_data_df = self.df
         examples = []
-        for i in range(len(excel_data_df)):  # 70587
-            text_a, label = excel_data_df.loc[i]['content'], excel_data_df.loc[i]['label']
+        for i in range(len(excel_data_df)):
+            text_a, label = excel_data_df.loc[i]['document'], excel_data_df.loc[i]['label']
             examples.append(ClassificationExample(text_a=text_a, text_b=None, label=label))
         return examples
 
